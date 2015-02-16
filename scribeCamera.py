@@ -2,29 +2,27 @@
 import cv2
 import matplotlib.pyplot as plt
 import io
-import psycopg2
 import requests
 
-# data = io.BytesIO()
-# with picamera.PiCamera() as camera: 
-# 	camera.camputre(data, format="jpeg")
-# data = np.fromstring(data.getvalue(), dtype=np.uint8)
-# image =  cv2.imdecode(data, 1)
-#image = image[0: 300, 0:300]	
+data = io.BytesIO()
+with picamera.PiCamera() as camera: 
+	camera.capture(data, format="jpeg")
+data = np.fromstring(data.getvalue(), dtype=np.uint8)
+image =  cv2.imdecode(data, 1)
+image = image[0: 300, 0:300]	
 
-image = cv2.imread("/Users/wilsoncusack/Downloads/test.png") # the raw image
+#image = cv2.imread("/Users/wilsoncusack/Downloads/test-3.png") # the raw image
 gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY) # convert to grayscale
-ret,thresh = cv2.threshold(gray,127,255,cv2.THRESH_BINARY)
+ret,thresh = cv2.threshold(gray,120,255,cv2.THRESH_BINARY)
 contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 string = """<?xml version="1.0" standalone="no"?>
  <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> 
- <svg viewBox = "0 0 1100 400" version = "1.1">"""
+ <svg viewBox = "0 0 300 300" version = "1.1">"""
 
 # for each contour (a list of X,Y points)
 for i,c in enumerate(contours):
-	print(i)
-	if c.shape[0] > 2:
-		path =  """<polygon fill="none" stroke="#000000" stroke-miterlimit="10" points=" """ 
+	if c.shape[0] > 10:
+		path =  """<path d = "M """
 		counter = 0
 
 		numCords = len(c)
@@ -38,39 +36,23 @@ for i,c in enumerate(contours):
 			if counter == 0:
 				path += str(x) + " "
 				path += str(y)
-				path += ", "
+				path += " "
 				counter += 1
 			else:
-				path += str(x) + " "
+				path += "L " + str(x) + " "
 				path += str(y)
-				path += ", "
+				path += " "
 			z = z + 2
 			
-		path += """ " /> """
+		path += """ " fill = "none" stroke = "black" stroke-width = "3"/> """
 		path += "\n"
-		string += path
-	i = i + 2
-		
+		string += path	
 
 # you'll want to delete contours that have only 1 point
 string += "</svg>"
-f = open("test.svg", 'w')
+f = open("use1.svg", 'w')
 f.write(string)
 f.close()
 
-conn = psycopg2.connect("postgres://tubitwuvyutxtk:yRxIUwIPnN7AE7jkAYP9Nj8Vwj@ec2-184-73-165-193.compute-1.amazonaws.com:5432/d5qfkm0tdfjdum")
-cursor = conn.cursor()
-SQL = "INSERT INTO drawings (drawing, source) VALUES (%s, %s)" 
-data = (string, 1,)
-cursor.execute(SQL, data)
-conn.commit()
-cursor.close()
 
-r = requests.get('http://localhost:5000/newDrawing')
-
-
-# <?xml version="1.0" standalone="no"?>
-# <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> 
-# <svg viewBox = "0 0 1100 400" version = "1.1">
-#     <path id = "s3" d = "M 60 0 L 120 0 L 180 60 L 180 120 L 120 180 L 60 180 L 0 120 L 0 60" fill = "green" stroke = "black" stroke-width = "3"/>
-# </svg>
+r = requests.get('http://localhost:5000/newDrawing', params={'svg':string})
