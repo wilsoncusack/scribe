@@ -56,3 +56,4 @@ f.close()
 
 
 r = requests.get('http://localhost:5000/newDrawing', params={'svg':string})
+
