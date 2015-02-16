@@ -58,13 +58,6 @@ f = open("test.svg", 'w')
 f.write(string)
 f.close()
 
-conn = psycopg2.connect("postgres://tubitwuvyutxtk:yRxIUwIPnN7AE7jkAYP9Nj8Vwj@ec2-184-73-165-193.compute-1.amazonaws.com:5432/d5qfkm0tdfjdum")
-cursor = conn.cursor()
-SQL = "INSERT INTO drawings (drawing, source) VALUES (%s, %s)" 
-data = (string, 1,)
-cursor.execute(SQL, data)
-conn.commit()
-cursor.close()
 
 r = requests.get('http://localhost:5000/newDrawing')
 
