@@ -1,8 +1,9 @@
 #!/usr/local/bin/python
 import cv2
-import matplotlib.pyplot as plt
 import io
 import requests
+import picamera
+import numpy as np
 
 data = io.BytesIO()
 with picamera.PiCamera() as camera: 
@@ -10,6 +11,7 @@ with picamera.PiCamera() as camera:
 data = np.fromstring(data.getvalue(), dtype=np.uint8)
 image =  cv2.imdecode(data, 1)
 image = image[0: 300, 0:300]	
+cv2.imwrite("test.png", image)
 
 #image = cv2.imread("/Users/wilsoncusack/Downloads/test-3.png") # the raw image
 gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY) # convert to grayscale
@@ -55,5 +57,5 @@ f.write(string)
 f.close()
 
 
-r = requests.get('http://localhost:5000/newDrawing', params={'svg':string})
+r = requests.get('http://10.38.40.209:5000/newDrawing', params={'svg':string})
 
