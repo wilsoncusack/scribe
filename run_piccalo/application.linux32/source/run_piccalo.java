@@ -52,7 +52,7 @@ public void setup() {
   //loop();
 
 
-  PShape svg = loadShape("/Users/wilsoncusack/Desktop/Desktop/github/scribe/use.svg"); //this is change
+  PShape svg = loadShape("/home/pi/Desktop/scribe/use.svg"); //this is change
   svg.disableStyle();
   piccolo.beginDraw();
   piccolo.clear();
