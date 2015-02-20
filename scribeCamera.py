@@ -65,7 +65,7 @@ def takePhoto():
 	f.close()
 	
 	try:
-		r = requests.get('http://10.0.4.31:5000/newDrawing', params={'svg':string})
+		r = requests.get('http://192.168.1.138:5000/newDrawing', params={'svg':string})
 	except:
 		print("didn't send")
 
